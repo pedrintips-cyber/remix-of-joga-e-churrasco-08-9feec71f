@@ -23,11 +23,18 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data: setting } = await supabase
+    const { data: setting, error: settingsError } = await supabase
       .from("site_settings")
       .select("value")
       .eq("key", "payment_gateway_token")
-      .single();
+      .maybeSingle();
+
+    if (settingsError) {
+      return new Response(JSON.stringify({ error: "Could not load payment gateway settings" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const apiKey = setting?.value;
     if (!apiKey) {
@@ -58,6 +65,15 @@ Deno.serve(async (req) => {
       }),
     });
 
+    if (!paradiseRes.ok) {
+      const paradiseError = await paradiseRes.text();
+
+      return new Response(JSON.stringify({ error: "Failed to reach Paradise gateway", details: paradiseError }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const paradiseData = await paradiseRes.json();
 
     if (paradiseData.status === "success" || paradiseData.qr_code) {
@@ -66,6 +82,7 @@ Deno.serve(async (req) => {
         .from("orders")
         .update({
           status: "pending",
+          paradise_transaction_id: paradiseData.transaction_id ?? null,
         })
         .eq("id", order_id);
 

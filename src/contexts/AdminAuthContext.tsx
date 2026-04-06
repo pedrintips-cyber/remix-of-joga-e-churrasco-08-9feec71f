@@ -15,7 +15,8 @@ const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefin
 export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [authReady, setAuthReady] = useState(false);
+  const [roleLoading, setRoleLoading] = useState(true);
 
   const checkAdmin = async (userId: string): Promise<boolean> => {
     try {
@@ -34,37 +35,64 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let mounted = true;
 
-    // First get the current session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
       const u = session?.user ?? null;
       setUser(u);
-      if (u) {
-        const admin = await checkAdmin(u.id);
-        if (mounted) setIsAdmin(admin);
-      }
-      if (mounted) setLoading(false);
+      setAuthReady(true);
+      setRoleLoading(!!u);
     });
 
-    // Then listen for changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!mounted) return;
-      const u = session?.user ?? null;
-      setUser(u);
-      if (u) {
-        const admin = await checkAdmin(u.id);
-        if (mounted) setIsAdmin(admin);
-      } else {
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (!mounted) return;
+        const u = session?.user ?? null;
+        setUser(u);
+        setAuthReady(true);
+        setRoleLoading(!!u);
+      })
+      .catch((error) => {
+        console.error("Error restoring admin session:", error);
+        if (!mounted) return;
+        setUser(null);
         setIsAdmin(false);
-      }
-      if (mounted) setLoading(false);
-    });
+        setAuthReady(true);
+        setRoleLoading(false);
+      });
 
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!authReady) return;
+
+    if (!user) {
+      setIsAdmin(false);
+      setRoleLoading(false);
+      return;
+    }
+
+    setRoleLoading(true);
+
+    checkAdmin(user.id)
+      .then((admin) => {
+        if (!cancelled) setIsAdmin(admin);
+      })
+      .finally(() => {
+        if (!cancelled) setRoleLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authReady, user?.id]);
+
+  const loading = !authReady || roleLoading;
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });

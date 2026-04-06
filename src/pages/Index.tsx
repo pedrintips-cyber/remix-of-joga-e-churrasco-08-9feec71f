@@ -14,7 +14,14 @@ const Index = () => {
   // Load Facebook Pixel dynamically from settings
   useEffect(() => {
     const loadPixel = async () => {
-      const { data } = await supabase.from("site_settings").select("value").eq("key", "facebook_pixel_id").single();
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "facebook_pixel_id")
+        .maybeSingle();
+
+      if (error || !data?.value) return;
+
       if (data?.value) {
         const script = document.createElement("script");
         script.innerHTML = `

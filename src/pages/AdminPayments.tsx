@@ -9,12 +9,46 @@ const AdminPayments = () => {
   const [saving, setSaving] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState("");
 
+  const persistSetting = async (key: string, value: string) => {
+    const { data: existingRows, error: selectError } = await supabase
+      .from("site_settings")
+      .select("id")
+      .eq("key", key);
+
+    if (selectError) throw selectError;
+
+    if (existingRows && existingRows.length > 0) {
+      const { error: updateError } = await supabase
+        .from("site_settings")
+        .update({ value })
+        .eq("key", key);
+
+      if (updateError) throw updateError;
+      return;
+    }
+
+    const { error: insertError } = await supabase
+      .from("site_settings")
+      .insert({ key, value });
+
+    if (insertError) throw insertError;
+  };
+
   useEffect(() => {
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     setWebhookUrl(`https://${projectId}.supabase.co/functions/v1/paradise-webhook`);
     
     const fetch = async () => {
-      const { data } = await supabase.from("site_settings").select("key, value").in("key", ["payment_gateway_token", "payment_gateway_type"]);
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .in("key", ["payment_gateway_token", "payment_gateway_type"]);
+
+      if (error) {
+        toast.error("Não foi possível carregar as configurações do gateway.");
+        return;
+      }
+
       if (data) {
         data.forEach((s) => {
           if (s.key === "payment_gateway_token") setGatewayToken(s.value || "");
@@ -26,13 +60,26 @@ const AdminPayments = () => {
   }, []);
 
   const handleSave = async () => {
+    if (gatewayType === "paradise" && !gatewayToken.trim()) {
+      toast.error("Informe a Secret Key da Paradise antes de salvar.");
+      return;
+    }
+
     setSaving(true);
-    await Promise.all([
-      supabase.from("site_settings").update({ value: gatewayToken }).eq("key", "payment_gateway_token"),
-      supabase.from("site_settings").update({ value: gatewayType }).eq("key", "payment_gateway_type"),
-    ]);
-    setSaving(false);
-    toast.success("Gateway salvo!");
+
+    try {
+      await Promise.all([
+        persistSetting("payment_gateway_token", gatewayToken.trim()),
+        persistSetting("payment_gateway_type", gatewayType),
+      ]);
+
+      toast.success("Gateway salvo com sucesso!");
+    } catch (error) {
+      console.error("Error saving payment gateway settings:", error);
+      toast.error("Não foi possível salvar o gateway.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
