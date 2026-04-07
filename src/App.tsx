@@ -21,6 +21,7 @@ const AdminSettings = lazy(() => import("./pages/AdminSettings.tsx"));
 const AdminReports = lazy(() => import("./pages/AdminReports.tsx"));
 const AdminPayments = lazy(() => import("./pages/AdminPayments.tsx"));
 const AdminCustomers = lazy(() => import("./pages/AdminCustomers.tsx"));
+const AdminCustomKitItems = lazy(() => import("./pages/AdminCustomKitItems.tsx"));
 
 const queryClient = new QueryClient();
 
