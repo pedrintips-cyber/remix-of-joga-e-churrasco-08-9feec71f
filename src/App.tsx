@@ -21,6 +21,7 @@ const AdminSettings = lazy(() => import("./pages/AdminSettings.tsx"));
 const AdminReports = lazy(() => import("./pages/AdminReports.tsx"));
 const AdminPayments = lazy(() => import("./pages/AdminPayments.tsx"));
 const AdminCustomers = lazy(() => import("./pages/AdminCustomers.tsx"));
+const AdminCustomKitItems = lazy(() => import("./pages/AdminCustomKitItems.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const AppContent = () => {
             <Route path="banners" element={<AdminBanners />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="customers" element={<AdminCustomers />} />
+            <Route path="custom-kit" element={<AdminCustomKitItems />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="reports" element={<AdminReports />} />
             <Route path="payments" element={<AdminPayments />} />

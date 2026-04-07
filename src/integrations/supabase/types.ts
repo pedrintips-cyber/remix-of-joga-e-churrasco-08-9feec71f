@@ -74,6 +74,48 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_kit_items: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          max_quantity: number
+          name: string
+          price: number
+          sort_order: number
+          unit: string
+        }
+        Insert: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          max_quantity?: number
+          name: string
+          price?: number
+          sort_order?: number
+          unit?: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          max_quantity?: number
+          name?: string
+          price?: number
+          sort_order?: number
+          unit?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string

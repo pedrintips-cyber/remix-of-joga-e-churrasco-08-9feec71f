@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import {
   LayoutDashboard, Package, FolderOpen, Image, ShoppingBag,
-  Settings, LogOut, Menu, X, Flame, CreditCard, BarChart3, Users
+  Settings, LogOut, Menu, X, Flame, CreditCard, BarChart3, Users, Wrench
 } from "lucide-react";
 import { useState } from "react";
 
@@ -11,6 +11,7 @@ const navItems = [
   { label: "Pedidos", icon: ShoppingBag, path: "/admin/orders" },
   { label: "Produtos", icon: Package, path: "/admin/products" },
   { label: "Categorias", icon: FolderOpen, path: "/admin/categories" },
+  { label: "Kit Personalizado", icon: Wrench, path: "/admin/custom-kit" },
   { label: "Banners", icon: Image, path: "/admin/banners" },
   { label: "Clientes", icon: Users, path: "/admin/customers" },
   { label: "Relatórios", icon: BarChart3, path: "/admin/reports" },
@@ -47,7 +48,7 @@ const AdminLayout = () => {
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-2">
             <Flame className="h-5 w-5 text-primary" />
-            <span className="font-display text-lg text-gradient-brasil">ADMIN</span>
+            <span className="font-display text-lg text-gradient-fire">ADMIN</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 hover:bg-muted rounded">
             <X className="h-5 w-5" />

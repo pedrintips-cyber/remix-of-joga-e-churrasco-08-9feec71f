@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { Flame, Instagram, MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const Footer = () => {
@@ -23,30 +23,29 @@ const Footer = () => {
   const siteName = settings.site_name || "Churrasco da Torcida";
   const instagram = settings.instagram_url || "#";
   const whatsapp = settings.whatsapp_number || "";
-  const footerText = settings.footer_text || `© 2026 ${siteName} — Feito com 🔥`;
 
   return (
-    <footer id="contato" className="py-6 md:py-10 border-t border-border/50">
+    <footer className="py-6 border-t border-border/50 pb-20">
       <div className="container">
-        <div className="flex flex-col items-center gap-2.5">
-          <div className="flex items-center gap-1">
-            <Flame className="h-4 w-4 text-brasil-green" />
-            <span className="font-display text-sm md:text-lg text-gradient-brasil">{siteName.toUpperCase()}</span>
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <Flame className="h-4 w-4 text-primary" />
+            <span className="font-display text-sm text-gradient-fire">{siteName.toUpperCase()}</span>
           </div>
           <div className="flex gap-2">
             {instagram && instagram !== "#" && (
-              <a href={instagram} target="_blank" rel="noopener noreferrer" className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-primary/20 transition-colors">
-                <Instagram className="h-3 w-3 text-muted-foreground" />
+              <a href={instagram} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary/20 transition-colors">
+                <Instagram className="h-4 w-4 text-muted-foreground" />
               </a>
             )}
             {whatsapp && (
-              <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-primary/20 transition-colors">
-                <MessageCircle className="h-3 w-3 text-muted-foreground" />
+              <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary/20 transition-colors">
+                <MessageCircle className="h-4 w-4 text-muted-foreground" />
               </a>
             )}
           </div>
-          <p className="text-muted-foreground text-[10px] md:text-xs">
-            {footerText}
+          <p className="text-muted-foreground text-[10px]">
+            © 2026 {siteName} — Todos os direitos reservados
           </p>
         </div>
       </div>
