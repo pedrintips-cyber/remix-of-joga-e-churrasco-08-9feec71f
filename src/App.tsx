@@ -48,6 +48,7 @@ const AppContent = () => {
             <Route path="banners" element={<AdminBanners />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="customers" element={<AdminCustomers />} />
+            <Route path="custom-kit" element={<AdminCustomKitItems />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="reports" element={<AdminReports />} />
             <Route path="payments" element={<AdminPayments />} />

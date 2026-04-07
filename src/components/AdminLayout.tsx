@@ -48,7 +48,7 @@ const AdminLayout = () => {
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-2">
             <Flame className="h-5 w-5 text-primary" />
-            <span className="font-display text-lg text-gradient-brasil">ADMIN</span>
+            <span className="font-display text-lg text-gradient-fire">ADMIN</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 hover:bg-muted rounded">
             <X className="h-5 w-5" />
