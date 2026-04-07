@@ -19,11 +19,7 @@ const HeroBanner = () => {
 
   useEffect(() => {
     const fetchBanners = async () => {
-      const { data } = await supabase
-        .from("banners")
-        .select("*")
-        .eq("active", true)
-        .order("sort_order");
+      const { data } = await supabase.from("banners").select("*").eq("active", true).order("sort_order");
       if (data && data.length > 0) setBanners(data);
     };
     fetchBanners();
@@ -41,21 +37,14 @@ const HeroBanner = () => {
   if (banners.length === 0) return null;
 
   return (
-    <section id="inicio" className="relative w-full h-[200px] md:h-[380px] lg:h-[440px] overflow-hidden mt-12 md:mt-16">
+    <section id="inicio" className="relative w-full h-[200px] md:h-[380px] lg:h-[440px] overflow-hidden mt-12 md:mt-14">
       {banners.map((banner, i) => (
         <div
           key={banner.id}
           className="absolute inset-0 transition-opacity duration-700"
           style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 1 : 0 }}
         >
-          <img
-            src={banner.image_url}
-            alt={banner.title}
-            className="w-full h-full object-cover"
-            width={1920}
-            height={1080}
-            loading={i === 0 ? "eager" : "lazy"}
-          />
+          <img src={banner.image_url} alt={banner.title} className="w-full h-full object-cover" width={1920} height={1080} loading={i === 0 ? "eager" : "lazy"} />
         </div>
       ))}
 
@@ -76,16 +65,9 @@ const HeroBanner = () => {
           <button onClick={next} className="absolute right-1 top-1/2 -translate-y-1/2 z-20 bg-background/40 p-1 rounded-full">
             <ChevronRight className="h-4 w-4 text-foreground" />
           </button>
-
           <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 z-20 flex gap-1">
             {banners.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`h-1 rounded-full transition-all duration-300 ${
-                  i === current ? "bg-brasil-green w-4" : "bg-foreground/25 w-1"
-                }`}
-              />
+              <button key={i} onClick={() => setCurrent(i)} className={`h-1 rounded-full transition-all duration-300 ${i === current ? "bg-primary w-4" : "bg-foreground/25 w-1"}`} />
             ))}
           </div>
         </>

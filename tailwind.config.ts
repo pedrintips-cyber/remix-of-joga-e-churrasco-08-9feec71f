@@ -12,7 +12,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['"Bebas Neue"', 'sans-serif'],
+        display: ['"Oswald"', 'sans-serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
@@ -49,13 +49,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        brasil: {
-          green: "hsl(var(--brasil-green))",
-          yellow: "hsl(var(--brasil-yellow))",
-          blue: "hsl(var(--brasil-blue))",
-          gold: "hsl(var(--brasil-gold))",
-          dark: "hsl(var(--brasil-dark))",
+        meat: {
+          red: "hsl(var(--meat-red))",
+          "dark-red": "hsl(var(--meat-dark-red))",
         },
+        ember: "hsl(var(--ember-orange))",
+        charcoal: "hsl(var(--charcoal))",
+        smoke: "hsl(var(--smoke))",
+        gold: "hsl(var(--gold))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

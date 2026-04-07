@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Users, Zap } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { ShoppingCart, ChevronRight, Users } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,7 +21,12 @@ interface Product {
   sort_order: number;
 }
 
-const KitsSection = () => {
+interface Props {
+  filterCategory?: string;
+  onViewAll?: () => void;
+}
+
+const KitsSection = ({ filterCategory, onViewAll }: Props) => {
   const { addItem } = useCart();
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,45 +45,37 @@ const KitsSection = () => {
 
   if (categories.length === 0 && products.length === 0) return null;
 
-  // Products without category
-  const uncategorized = products.filter((p) => !p.category_id);
+  const filteredCategories = filterCategory === "bebidas"
+    ? categories.filter(c => c.name.toLowerCase().includes("bebida"))
+    : filterCategory === "carnes"
+    ? categories.filter(c => !c.name.toLowerCase().includes("bebida"))
+    : categories;
 
   return (
-    <section id="kits" className="py-6 md:py-16">
-      <div className="container">
-        {categories.map((cat) => {
+    <section id="kits" className="py-4 md:py-10">
+      <div className="space-y-6">
+        {filteredCategories.map((cat) => {
           const catProducts = products.filter((p) => p.category_id === cat.id);
           if (catProducts.length === 0) return null;
 
           return (
-            <div key={cat.id} className="mb-8">
-              <div className="text-center mb-4 md:mb-6">
-                <span className="inline-block bg-primary/15 text-primary text-[10px] md:text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-2">
-                  {cat.name}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 md:gap-5">
-                {catProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} addItem={addItem} />
-                ))}
-              </div>
-            </div>
+            <CategoryRow
+              key={cat.id}
+              category={cat}
+              products={catProducts}
+              addItem={addItem}
+            />
           );
         })}
 
-        {uncategorized.length > 0 && (
-          <div className="mb-8">
-            <div className="text-center mb-4 md:mb-6">
-              <span className="inline-block bg-primary/15 text-primary text-[10px] md:text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-2">
-                Produtos
-              </span>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 md:gap-5">
-              {uncategorized.map((product) => (
-                <ProductCard key={product.id} product={product} addItem={addItem} />
-              ))}
-            </div>
+        {onViewAll && (
+          <div className="container">
+            <button
+              onClick={onViewAll}
+              className="w-full py-3 rounded-xl border border-border bg-card text-foreground font-display text-sm flex items-center justify-center gap-2 hover:bg-muted transition-colors"
+            >
+              Ver Todos os Produtos <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
         )}
       </div>
@@ -86,48 +83,68 @@ const KitsSection = () => {
   );
 };
 
+const CategoryRow = ({ category, products, addItem }: { category: Category; products: Product[]; addItem: any }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div>
+      <div className="container flex items-center justify-between mb-2">
+        <h2 className="font-display text-lg md:text-2xl text-foreground">{category.name.toUpperCase()}</h2>
+        <span className="text-xs text-muted-foreground">{products.length} itens</span>
+      </div>
+      <div
+        ref={scrollRef}
+        className="flex gap-3 overflow-x-auto pl-4 pr-4 pb-2 snap-x snap-mandatory scrollbar-hide"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} addItem={addItem} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const ProductCard = ({ product, addItem }: { product: Product; addItem: any }) => (
-  <div className="bg-card rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-all group">
+  <div className="snap-start shrink-0 w-[160px] md:w-[220px] bg-card rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-all group">
     <div className="relative overflow-hidden">
       {product.image_url ? (
         <img
           src={product.image_url}
           alt={product.name}
-          className="w-full h-24 md:h-52 object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-28 md:h-40 object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
-          width={800}
-          height={800}
         />
       ) : (
-        <div className="w-full h-24 md:h-52 bg-muted flex items-center justify-center text-muted-foreground text-2xl">🍖</div>
+        <div className="w-full h-28 md:h-40 bg-muted flex items-center justify-center text-muted-foreground text-3xl">🥩</div>
       )}
       {product.tag && (
-        <span className="absolute top-1.5 left-1.5 md:top-3 md:left-3 bg-background/85 backdrop-blur-sm text-foreground px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-full text-[8px] md:text-xs font-bold">
+        <span className="absolute top-1.5 left-1.5 bg-primary/90 text-primary-foreground px-2 py-0.5 rounded-full text-[9px] font-bold">
           {product.tag}
         </span>
       )}
     </div>
-    <div className="p-2.5 md:p-4">
-      <h3 className="font-display text-sm md:text-xl text-foreground leading-tight">{product.name}</h3>
+    <div className="p-2.5">
+      <h3 className="font-display text-sm md:text-base text-foreground leading-tight truncate">{product.name}</h3>
       {product.description && (
-        <p className="text-muted-foreground text-[10px] md:text-sm mt-0.5 line-clamp-1">{product.description}</p>
+        <p className="text-muted-foreground text-[10px] mt-0.5 line-clamp-1">{product.description}</p>
       )}
       {product.serves && (
-        <div className="flex items-center gap-1 mt-1 text-muted-foreground text-[9px] md:text-xs">
-          <Users className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
+        <div className="flex items-center gap-1 mt-1 text-muted-foreground text-[9px]">
+          <Users className="h-2.5 w-2.5" />
           <span>{product.serves} pessoas</span>
         </div>
       )}
-      <div className="mt-2 md:mt-4 pt-2 border-t border-border/50">
-        <span className="font-display text-base md:text-2xl text-brasil-yellow block leading-none">
+      <div className="mt-2 pt-2 border-t border-border/50">
+        <span className="font-display text-base md:text-lg text-primary block leading-none">
           R$ {Number(product.price).toFixed(2).replace(".", ",")}
         </span>
         <button
           onClick={() => addItem({ id: product.id, name: product.name, price: Number(product.price), image: product.image_url || "" })}
-          className="w-full flex items-center justify-center gap-1 bg-gradient-green text-primary-foreground mt-2 py-1.5 md:py-2.5 rounded-full font-bold text-[10px] md:text-sm hover:brightness-110 active:scale-95 transition-all"
+          className="w-full flex items-center justify-center gap-1 bg-gradient-cta text-primary-foreground mt-2 py-2 rounded-lg font-bold text-[11px] hover:brightness-110 active:scale-95 transition-all shadow-cta"
         >
-          <Zap className="h-3 w-3 md:h-4 md:w-4" />
-          Pedir Agora
+          <ShoppingCart className="h-3 w-3" />
+          Adicionar
         </button>
       </div>
     </div>
