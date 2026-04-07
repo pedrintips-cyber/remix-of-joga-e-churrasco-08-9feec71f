@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import {
   LayoutDashboard, Package, FolderOpen, Image, ShoppingBag,
-  Settings, LogOut, Menu, X, Flame, CreditCard, BarChart3, Users
+  Settings, LogOut, Menu, X, Flame, CreditCard, BarChart3, Users, Wrench
 } from "lucide-react";
 import { useState } from "react";
 
@@ -11,6 +11,7 @@ const navItems = [
   { label: "Pedidos", icon: ShoppingBag, path: "/admin/orders" },
   { label: "Produtos", icon: Package, path: "/admin/products" },
   { label: "Categorias", icon: FolderOpen, path: "/admin/categories" },
+  { label: "Kit Personalizado", icon: Wrench, path: "/admin/custom-kit" },
   { label: "Banners", icon: Image, path: "/admin/banners" },
   { label: "Clientes", icon: Users, path: "/admin/customers" },
   { label: "Relatórios", icon: BarChart3, path: "/admin/reports" },
